@@ -1,7 +1,7 @@
 "dozet-light"
 {
 	"base"				"base"
-	"title"				"Zombie Survival"
+	"title"				"Zombie Survival[light]"
 	"maps"				"^zs_|^zm_|^zh_|^zps_|^zr_|^ze_"
 	"category"			"pvp"
 	"menusystem"		"1"
