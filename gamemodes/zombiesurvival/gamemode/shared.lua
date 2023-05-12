@@ -23,6 +23,9 @@ GM.Credits = {
 	{"The Special Duckling", "", "Danish translation"},
 	{"ptown, Dr. Broly", "", "Spanish translation"},
 
+	{"D-Z Toy", "", "Dozet creator"},
+	{"Холодное Молочко", "", "Dozet coder"},
+
 	{"Anyone else on GitHub or who I've forgotten", "", "Various contributions"},
 }
 
