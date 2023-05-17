@@ -7,6 +7,8 @@ end
 
 include("sh_globals.lua")
 
+
+
 include("obj_entity_extend_cl.lua")
 include("obj_player_extend_cl.lua")
 include("obj_weapon_extend_cl.lua")
@@ -27,6 +29,7 @@ include("skillweb/cl_skillweb.lua")
 include("vgui/dteamcounter.lua")
 include("vgui/dmodelpanelex.lua")
 include("vgui/dammocounter.lua")
+include("vgui/achievements.lua")
 include("vgui/dteamheading.lua")
 include("vgui/dmodelkillicon.lua")
 
@@ -1354,6 +1357,8 @@ function GM:CreateScalingFonts()
 	surface.CreateLegacyFont("csd", screenscale * 72, 100, true, false, "zsdeathnoticecspa", false, false)
 	surface.CreateLegacyFont("HL2MP", screenscale * 72, 100, true, false, "zsdeathnoticepa", false, false)
 
+	surface.CreateLegacyFont(fontfamily, screenscale * (5 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiniestStatus2", fontshadow, fontoutline, nil, true)
+	surface.CreateLegacyFont(fontfamily, screenscale * (10 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiniestStatus", fontshadow, fontoutline, nil, true)
 	surface.CreateLegacyFont(fontfamily, screenscale * (16 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiny", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (20 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmallest", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (22 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmaller", fontshadow, fontoutline)

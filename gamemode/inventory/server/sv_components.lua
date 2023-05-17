@@ -7,7 +7,29 @@ GM.StarterTrinkets = {
 	"trinket_vitamins",
 	"trinket_welfare",
 	"trinket_chemistry"
+	
 }
+GM.GetActiveTrinkets = {
+	"cons_pill_unk",
+	"cons_void",
+	"cons_mantle",
+	"cons_necronomicon",
+	"cons_chaos",
+	"cons_d4",
+	"cons_d1",
+	"cons_dust",
+	"cons_friendship",
+	"cons_gausscard",
+	"cons_timer",
+	"cons_flame_p",
+	"cons_minos",
+	"cons_sack_of_trinkets",
+	'cons_grandma_vase',
+	"cons_black_hole",
+	"cons_xmas_goodness"
+}
+
+
 
 function GM:AddWorldPropConversionRecipe(model, result)
 	local datatab = {Result = result, Index = wcindex}

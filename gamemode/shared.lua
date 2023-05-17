@@ -49,6 +49,7 @@ include("obj_player_extend.lua")
 include("obj_weapon_extend.lua")
 
 include("sh_translate.lua")
+include("sh_achievements_table.lua")
 include("sh_colors.lua")
 include("sh_serialization.lua")
 include("sh_util.lua")
@@ -805,9 +806,6 @@ function GM:PlayerNoClip(pl, on)
 	if pl:IsAdmin() then
 		if SERVER then
 			PrintMessage(HUD_PRINTCONSOLE, translate.Format(on and "x_turned_on_noclip" or "x_turned_off_noclip", pl:Name()))
-		end
-
-		if SERVER then
 			pl:MarkAsBadProfile()
 		end
 

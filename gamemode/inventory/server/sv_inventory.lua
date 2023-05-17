@@ -8,8 +8,29 @@ function meta:AddInventoryItem(item)
 	if GAMEMODE:GetInventoryItemType(item) == INVCAT_TRINKETS then
 		self:ApplyTrinkets()
 	end
+	if item == "trinket_clever" then
+		self:GiveAchievement("bruhwtf")
+	end
+
+
 
 	net.Start("zs_inventoryitem")
+		net.WriteString(item)
+		net.WriteInt(self.ZSInventory[item], 5)
+	net.Send(self)
+
+	return true
+end
+function meta:UpgradeInventoryItem(item)
+	if not GAMEMODE:IsInventoryItem(item) then return false end
+
+	self.ZSInventory[item] = self.ZSInventory[item] and self.ZSInventory[item] + 1 or 1
+
+	if GAMEMODE:GetInventoryItemType(item) == INVCAT_TRINKETS then
+		self:ApplyTrinkets()
+	end
+
+	net.Start("zs_upgradeitem")
 		net.WriteString(item)
 		net.WriteInt(self.ZSInventory[item], 5)
 	net.Send(self)
@@ -26,7 +47,13 @@ function meta:TakeInventoryItem(item)
 	if setnil then
 		self.ZSInventory[item] = nil
 	end
-
+	if GAMEMODE.ZSInventoryItemData[item].PacModels then
+		net.Start("zs_item_pac")
+			net.WriteString(item)
+			net.WriteEntity(self)
+			net.WriteBool(true)
+		net.Send(self)
+	end
 	if GAMEMODE:GetInventoryItemType(item) == INVCAT_TRINKETS then
 		self:ApplyTrinkets()
 	end
@@ -56,19 +83,41 @@ net.Receive("zs_trycraft", function(len, pl)
 	pl:TryAssembleItem(component, weapon)
 end)
 
+local function UseActive(pl,trin,uses,callback)
+		callback(pl)
+		if GAMEMODE.ZSInventoryItemData[trin].BountyNeed ~= 0 then
+			pl.LastCall = trin
+		end
+end
+net.Receive("zs_activate_trinket", function(len, pl)
+	local trinket = net.ReadString()
+	local pl = net.ReadEntity()
+	local callback = GAMEMODE.ZSInventoryItemData[trinket].Bounty
+	local uses = GAMEMODE.ZSInventoryItemData[trinket].BountyNeed*(pl.ChargesUse or 1)
+	if pl:HasInventoryItem(trinket) and callback and uses <= pl:GetChargesActive() or pl:HasInventoryItem(trinket) and callback and GAMEMODE.ZSInventoryItemData[trinket].BountyNeed == 0 then
+		if pl:IsSkillActive(SKILL_DOUBLE) and math.random(1,4) == 1 then
+			uses = 0
+		end
+		pl:SetChargesActive(pl:GetChargesActive()-uses)
+		for i=1,(pl:HasTrinket("acum") and 2 or 1) do
+			UseActive(pl,trinket,uses,callback)
+		end
+	end
+end)
+
 function meta:TryAssembleItem(component, heldclass)
 	local heldwep, desiassembly = self:GetWeapon(heldclass)
-	local heldwepiitype = GAMEMODE:GetInventoryItemType(heldclass) ~= -1
+	local heldwepiitype = GAMEMODE:GetInventoryItemType(heldclass) ~= 4
 
 	if heldwepiitype then
 		if not self:HasInventoryItem(heldclass) then
-			self:CenterNotify(COLOR_RED, "You don't have the item to craft this with.")
+			self:CenterNotify(COLOR_RED, translate.ClientGet(self, "inv_dont_have_s"))
 			self:SendLua("surface.PlaySound(\"buttons/button10.wav\")")
 			return
 		end
 	else
 		if not heldwep or not heldwep:IsValid() then
-			self:CenterNotify(COLOR_RED, "You don't have the weapon to craft this with.")
+			self:CenterNotify(COLOR_RED, translate.ClientGet(self, "inv_dont_have_w"))
 			self:SendLua("surface.PlaySound(\"buttons/button10.wav\")")
 			return
 		end
@@ -80,6 +129,7 @@ function meta:TryAssembleItem(component, heldclass)
 			desiassembly = assembly
 			break
 		end
+
 	end
 
 	if not desiassembly then
@@ -88,7 +138,7 @@ function meta:TryAssembleItem(component, heldclass)
 		return
 	end
 
-	local invitemresult = GAMEMODE:GetInventoryItemType(desiassembly) ~= -1
+	local invitemresult = GAMEMODE:GetInventoryItemType(desiassembly) ~= 4
 
 	local desitable
 	if invitemresult then
@@ -96,10 +146,15 @@ function meta:TryAssembleItem(component, heldclass)
 
 		self:AddInventoryItem(desiassembly)
 		self:CenterNotify(COLOR_LIMEGREEN, translate.ClientGet(self, "crafting_successful"), color_white, "   ("..GAMEMODE.ZSInventoryItemData[desiassembly].PrintName..")")
+		if desiassembly == "trinket_toykasoul" then
+			self:GiveAchievement("soul")
+		end
 	else
 		desitable = weapons.Get(desiassembly)
 		if (not desitable.AmmoIfHas and self:HasWeapon(desiassembly)) or not self:TakeInventoryItem(component) then return end
-
+		if desiassembly == "weapon_zs_sigil_port_a" then
+			self:GiveAchievement("anti_sigil")
+		end
 		if desitable.AmmoIfHas then
 			self:GiveAmmo(1, desitable.Primary.Ammo)
 		end
@@ -121,7 +176,6 @@ function meta:TryAssembleItem(component, heldclass)
 	end
 	self:SendLua("surface.PlaySound(\"buttons/lever"..math.random(5)..".wav\")")
 
-	GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_WEAPON, desiassembly, "Crafts", 1)
 end
 
 function meta:DropInventoryItemByType(itype)
@@ -132,6 +186,7 @@ function meta:DropInventoryItemByType(itype)
 	if ent:IsValid() then
 		ent:SetInventoryItemType(itype)
 		ent:Spawn()
+		ent:SetOwner(self)
 		ent.DroppedTime = CurTime()
 
 		self:TakeInventoryItem(itype)
@@ -146,6 +201,18 @@ function meta:DropAllInventoryItems()
 	local vVel = self:GetVelocity()
 	local zmax = self:OBBMaxs().z * 0.75
 	for invitem, count in pairs(self:GetInventoryItems()) do
+		if self:HasTrinket("flower") then
+			self:TakeInventoryItem("trinket_flower")
+		end
+		if self:HasTrinket("flower_g") then
+			self:TakeInventoryItem("trinket_flower_g")
+		end
+		if self:HasTrinket("clever") then
+			self:TakeInventoryItem("trinket_clever")
+		end
+		if self:HasTrinket("a_flower") then
+			self:TakeInventoryItem("trinket_a_flower")
+		end
 		for i = 1, count do
 			local ent = self:DropInventoryItemByType(invitem)
 			if ent and ent:IsValid() then

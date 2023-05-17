@@ -466,3 +466,27 @@ net.Receive("zs_nestbuilt", function(length)
 		GAMEMODE.ZSpawnMenu:RefreshContents()
 	end
 end)
+
+net.Receive("AchievementsProgress", function()
+	local p = util.JSONToTable(net.ReadString())
+	local completed = net.ReadInt(9)
+    GAMEMODE.AchievementsProgress =  p
+
+
+    -- Clamp progress
+    for id, progress in pairs(p) do
+        if isnumber(progress)   then
+            GAMEMODE.AchievementsProgress[id] = math.Clamp(progress, 0, GAMEMODE.Achievements[id].Goal or 1)
+
+        end
+    end
+end)
+net.Receive("AchievementsGet", function()
+    local ply = net.ReadEntity()
+    local id = net.ReadString()
+    -- Chat
+    chat.AddText(COLOR_WHITE, "[", Color(125, 255, 125), "ZS", COLOR_WHITE, "] ", ply, COLOR_WHITE, " has earned ", Color(125, 255, 125), GAMEMODE.Achievements[id].Name, COLOR_WHITE, ".")
+    -- Sound
+  
+
+end)
