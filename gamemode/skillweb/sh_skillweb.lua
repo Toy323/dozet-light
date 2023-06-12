@@ -1,6 +1,5 @@
-include("registry.lua")
-
 -- These are inverse functions of eachother!
+include("registry.lua")
 function GM:LevelForXP(xp)
 	--return math.floor(1 + 1 * math.sqrt(xp))
 	return math.floor(1 + 0.25 * math.sqrt(xp))

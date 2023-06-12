@@ -1763,3 +1763,9 @@ function meta:BarricadeExpertPrecedence(otherpl)
 
 	return -1
 end
+function meta:SetChargesActive(charges)
+	self:SetDTInt(DT_PLAYER_INT_ACTIV, charges)
+end
+function meta:AddChargesActive(int)
+	self:SetChargesActive(self:GetChargesActive()+int)
+end

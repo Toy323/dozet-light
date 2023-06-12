@@ -1004,3 +1004,6 @@ end
 function meta:GetPhantomHealth()
 	return self:GetDTFloat(DT_PLAYER_FLOAT_PHANTOMHEALTH)
 end
+function meta:GetChargesActive()
+	return self:GetDTInt(DT_PLAYER_INT_ACTIV)
+end

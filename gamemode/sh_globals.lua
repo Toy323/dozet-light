@@ -39,6 +39,7 @@ DT_PLAYER_INT_REMORTLEVEL = 5
 DT_PLAYER_INT_XP = 6
 DT_PLAYER_INT_BLOODARMOR = 7
 DT_PLAYER_INT_VOICESET = 8
+DT_PLAYER_INT_ACTIV = 9
 DT_PLAYER_BOOL_BARRICADEEXPERT = 6
 DT_PLAYER_BOOL_NECRO = 7
 DT_PLAYER_BOOL_FRAIL = 8
@@ -115,7 +116,7 @@ GM.ExtraHealthPerExtraNail = 75
 GM.MaxNails = 4
 
 -- Moved from options to globals because the game is now balanced around it being static. The gamemode will BREAK if this is not 6!!
-GM.NumberOfWaves = 6
+GM.NumberOfWaves = 12
 
 GM.PulsePointsMultiplier = 1.25
 
