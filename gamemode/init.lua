@@ -451,29 +451,18 @@ end
 GM.TopNotify = GM.TopNotifyAll
 
 function GM:ShowHelp(pl)
-	pl:SendLua("GAMEMODE:ShowHelp()")
 end
 
 function GM:ShowTeam(pl)
-	if pl:Team() == TEAM_HUMAN and not self.ZombieEscape then
-		pl:SendLua(self:GetWave() > 0 and "GAMEMODE:OpenArsenalMenu()" or "MakepWorth()")
-	end
+
 end
 
 function GM:ShowSpare1(pl)
-	if pl:Team() == TEAM_UNDEAD then
-		if self:ShouldUseAlternateDynamicSpawn() then
-			pl:CenterNotify(COLOR_RED, translate.ClientGet(pl, "no_class_switch_in_this_mode"))
-		else
-			pl:SendLua("GAMEMODE:OpenClassSelect()")
-		end
-	elseif pl:Team() == TEAM_HUMAN then
-		pl:SendLua("GAMEMODE:ToggleSkillWeb()")
-	end
+
 end
 
 function GM:ShowSpare2(pl)
-	pl:SendLua("MakepOptions()")
+
 end
 
 function GM:SetupSpawnPoints()
@@ -1143,6 +1132,7 @@ function GM:Think()
 				if pl:WaterLevel() >= 3 and not (pl.status_drown and pl.status_drown:IsValid()) then
 					pl:GiveStatus("drown")
 				end
+				pl:MetaAddScore(pl:Frags())
 
 				local healmax = pl:IsSkillActive(SKILL_D_FRAIL) and math.floor(pl:GetMaxHealth() * 0.25) or pl:GetMaxHealth()
 
@@ -1209,7 +1199,7 @@ function GM:Think()
 					pl.OldWeaponToReload = nil
 				end
 
-				if pl:IsSkillActive(SKILL_STOWAGE) and self:GetWave() > 0 and time > (pl.NextResupplyUse or 0) then
+				if self:GetWave() > 0 and time > (pl.NextResupplyUse or 0) then
 					local stockpiling = pl:IsSkillActive(SKILL_STOCKPILE)
 
 					pl.NextResupplyUse = time + self.ResupplyBoxCooldown * (pl.ResupplyDelayMul or 1) * (stockpiling and 2.12 or 1)
@@ -4022,31 +4012,6 @@ function GM:WaveStateChanged(newstate)
 			for _, pl in pairs(humans) do
 				if pl.PlayerReady then -- There's a chance they might not be ready to send their desired cart yet.
 					gamemode.Call("GiveDefaultOrRandomEquipment", pl)
-				end
-			end
-
-			-- We should spawn a crate in a random spawn point if no one has any.
-			if not self.ZombieEscape and #ents.FindByClass("prop_arsenalcrate") == 0 then
-				local have = false
-				for _, pl in pairs(humans) do
-					if pl:HasWeapon("weapon_zs_arsenalcrate") then
-						have = true
-						break
-					end
-				end
-
-				if not have and #humans >= 1 then
-					local spawn = self:PlayerSelectSpawn(humans[math.random(#humans)])
-					if spawn and spawn:IsValid() then
-						local ent = ents.Create("prop_arsenalcrate")
-						if ent:IsValid() then
-							ent:SetPos(spawn:GetPos() + Vector(0, 0, 8))
-							ent:Spawn()
-							ent:DropToFloor()
-							ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER) -- Just so no one gets stuck in it.
-							ent.NoTakeOwnership = true
-						end
-					end
 				end
 			end
 		end

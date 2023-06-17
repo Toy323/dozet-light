@@ -569,17 +569,23 @@ function GM:DrawFearMeter(power, screenscale)
 			draw_SimpleTextBlurry(translate.Format("resist_x", math.ceil(self:GetDamageResistance(currentpower) * 100)), "ZSDamageResistance", w * 0.5, my + size * 0.75, Color(currentpower * 200, 200 - currentpower * 200, 0, 255), TEXT_ALIGN_CENTER)
 		end
 	end
+	local sigilsc = 0
+	for _, ent in pairs(ents.GetAll()) do 
+		if ent:GetClass() == "prop_obj_sigil" then
+			sigilsc = sigilsc + 1
+		end
+	end
 
-	if self:GetUseSigils() and self.MaxSigils > 0 then
+	if  sigilsc > 0 then
 		local sigwid, sighei = screenscale * 18, screenscale * 36
 		local extrude = size * 0.25 + sighei / 2
 		local angle_current = -180
-		local angle_step = 180 / (self.MaxSigils - 1)
+		local angle_step = 180 / (sigilsc - 1)
 		local rad, sigil, health, maxhealth, corrupt, damageflash, sigx, sigy, healthfrac
 
 		local sigils = GAMEMODE.CachedSigils
 		local corruptsigils = 0
-		for i=1, self.MaxSigils do
+		for i=1, sigilsc do
 			sigil = sigils[i]
 			health = 0
 			maxhealth = 0
@@ -610,6 +616,7 @@ function GM:DrawFearMeter(power, screenscale)
 
 				surface_SetMaterial(matSigil)
 				surface_DrawTexturedRectRotated(sigx, sigy, sigwid, sighei, angle_current + 90)
+				draw_SimpleTextBlurry(string.char(64 + i), "ZS3D2DFontSuperTiny", sigx, sigy, COLOR_GRAY, TEXT_ALIGN_CENTER)
 
 				if corrupt then
 					surface_SetMaterial(matCrossout)
@@ -637,6 +644,7 @@ function GM:DrawFearMeter(power, screenscale)
 		end
 	end
 end
+
 
 function GM:GetDynamicSpawning()
 	return not GetGlobalBool("DynamicSpawningDisabled", false)
@@ -1038,6 +1046,31 @@ function GM:RequestedDefaultCart()
 	end
 end
 
+function GM:ClickedPlayerButton(pl, button)
+	surface.PlaySound("buttons/button15.wav")
+
+    local menu = DermaMenu(true, self)
+    menu:AddOption(translate.Format("tab_name", pl:GetName()), function() end)
+    if not pl:IsBot() then
+        menu:AddOption(translate.Get("tab_steam"), function() pl:ShowProfile() end)
+    end
+    if pl:Team() == TEAM_HUMAN and pl ~= MySelf then
+        menu:AddOption(translate.Format("tab_points", pl:GetPoints()), function() end)
+    else
+        if MySelf:Team() == TEAM_UNDEAD then
+            menu:AddOption(translate.Format("tab_zclass", translate.Get(pl:GetZombieClassTable().TranslationName)), function() end)
+        end
+    end
+    menu:AddOption(translate.Format("tab_xp", pl:GetZSXP(), self:XPForLevel(pl:GetZSLevel() + 1), self.MaxXP), function() end)
+    menu:AddOption(translate.Format("tab_level", pl:GetZSLevel()), function() end)
+    menu:AddOption(translate.Format("tab_remort", pl:GetZSRemortLevel()), function() end)
+	if self:IsSpecialPerson(pl) then
+		menu:AddOption(self:IsSpecialPerson(pl, nil,true), function() end)
+	end
+
+    menu:Open()
+end
+
 function GM:_PostDrawTranslucentRenderables()
 	if not self.DrawingInSky then
 		self:DrawPointWorldHints()
@@ -1303,6 +1336,9 @@ function GM:Create3DFonts()
 	local fontsizeadd3D = 0
 	local fontweight3D = 0
 
+	
+	surface.CreateLegacyFont(fontfamily, 16, fontweight3D, false, false,  "ZS3D2DFontSuperTiny2", false, true, nil, true)
+	surface.CreateLegacyFont(fontfamily, 18, fontweight3D, false, false,  "ZS3D2DFontSuperTiny", false, true, nil, true)
 	surface.CreateLegacyFont(fontfamily3d, 28 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFontSmaller", false, true)
 	surface.CreateLegacyFont(fontfamily3d, 48 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFontSmall", false, true)
 	surface.CreateLegacyFont(fontfamily3d, 72 + fontsizeadd3D, fontweight3D, false, false, "ZS3D2DFont", false, true)
@@ -1365,7 +1401,7 @@ function GM:CreateScalingFonts()
 	surface.CreateLegacyFont(fontfamily, screenscale * (10 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiniestStatus", fontshadow, fontoutline, nil, true)
 	surface.CreateLegacyFont(fontfamily, screenscale * (16 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiniest", fontshadow, fontoutline, nil, true)
 	surface.CreateLegacyFont(fontfamily, screenscale * (16 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiny", fontshadow, fontoutline)
-	surface.CreateLegacyFont(fontfamily, screenscale * (20 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmallest", fontshadow, fontoutline)
+	surface.CreateLegacyFont(fontfamily, screenscale * (20 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmallest", fontshadow, fontoutline, nil, true)
 	surface.CreateLegacyFont(fontfamily, screenscale * (22 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmaller", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (28 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmall", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (42 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFont", fontshadow, fontoutline)
@@ -1794,9 +1830,35 @@ function GM:PlayerBindPress(pl, bind, wasin)
 		if P_Team(pl) == TEAM_UNDEAD and pl:Alive() then
 			self:ToggleZombieVision()
 		end
-	end
+	elseif bind == "gm_showhelp" then
+        GAMEMODE:ShowHelp()
+    elseif bind == "gm_showteam" then
+        if pl:Team() == TEAM_HUMAN and not self.ZombieEscape then
+            if self:GetWave() > 0 then
+                GAMEMODE:OpenArsenalMenu()
+            else
+                MakepWorth()
+            end
+        elseif pl:Team() == TEAM_UNDEAD then
+         --   MakepMutationShop()
+        end
+    elseif bind == "gm_showspare1" then
+        if pl:Team() == TEAM_UNDEAD and not input.IsShiftDown() then
+            if self:ShouldUseAlternateDynamicSpawn() then
+                pl:CenterNotify(COLOR_RED, translate.Get("no_class_switch_in_this_mode"))
+            else
+                GAMEMODE:OpenClassSelect()
+            end
+        elseif (pl:Team() == TEAM_HUMAN or pl:Team() == TEAM_UNDEAD and input.IsShiftDown()) then
+            GAMEMODE:ToggleSkillWeb()
+        end
+    elseif bind == "gm_showspare2" then
+        MakepOptions()
+    end
 end
-
+function GM:ZSChallenges()
+    vgui.Create("ZS.Challenges")
+end
 function GM:_ShouldDrawLocalPlayer(pl)
 	return FROM_CAMERA or P_Team(pl) == TEAM_UNDEAD and (self.ZombieThirdPerson or pl:CallZombieFunction0("ShouldDrawLocalPlayer"))
 	or P_Team(pl) == TEAM_HUMAN and self:UseOverTheShoulder()

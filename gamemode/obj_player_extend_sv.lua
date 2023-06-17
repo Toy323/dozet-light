@@ -277,23 +277,39 @@ function meta:HasWon()
 
 	return false
 end
-
+local bosses = {
+	"Bad Marrow",  -- 1
+	"Miss ASS",  -- 2
+	"Giga Shadow Child",  -- 3
+	"Red Marrow",  -- 4
+	"Ancient Nightmare",  -- 6
+	"Bloody Nightmare",  -- 7
+	"Bonemesh",  -- 8
+	"God of Shitcade",  --12
+	"Giga Gore Child",  --13
+	"The Grave Darkness",  --14
+	"Ice Puke Pus",  --15
+	"Nightmare",
+	"Puke Pus",
+	"Skeleton"  --16
+}
 function meta:GetBossZombieIndex()
 	local bossclasses = {}
 	for _, classtable in pairs(GAMEMODE.ZombieClasses) do
-		if classtable.Boss then
+		if classtable.Boss and GAMEMODE:GetWave() >= (classtable.Wave and classtable.Wave or 0) then
 			table.insert(bossclasses, classtable.Index)
 		end
 	end
 
 	if #bossclasses == 0 then return -1 end
-
 	local desired = self:GetInfo("zs_bossclass") or ""
 	if GAMEMODE:IsBabyMode() then
 		desired = "Giga Gore Child"
-	elseif desired == "[RANDOM]" or desired == "" then
-		desired = "Nightmare"
+	elseif desired == "" then
+		desired = table.Random(bosses)
 	end
+
+
 
 	local bossindex
 	for _, classindex in pairs(bossclasses) do
@@ -303,10 +319,8 @@ function meta:GetBossZombieIndex()
 			break
 		end
 	end
-
 	return bossindex or bossclasses[1]
 end
-
 function meta:ShouldReviveFrom(dmginfo, hullzplane)
 	return not self.Revive
 	and not dmginfo:GetInflictor().IsMelee and not dmginfo:GetInflictor().NoReviveFromKills
@@ -921,29 +935,21 @@ function meta:Resupply(owner, obj)
 	local stockpiling = self:IsSkillActive(SKILL_STOCKPILE)
 	local stowage = self:IsSkillActive(SKILL_STOWAGE)
 
-	if (stowage and (self.StowageCaches or 0) <= 0) or (not stowage and CurTime() < (self.NextResupplyUse or 0)) then
+	if (self.StowageCaches or 0) <= 0 then
 		self:CenterNotify(COLOR_RED, translate.ClientGet(self, "no_ammo_here"))
 		return
 	end
 
-	if not stowage then
-		self.NextResupplyUse = CurTime() + GAMEMODE.ResupplyBoxCooldown * (self.ResupplyDelayMul or 1) * (stockpiling and 2.12 or 1)
-
-		net.Start("zs_nextresupplyuse")
-			net.WriteFloat(self.NextResupplyUse)
-		net.Send(self)
-	else
 		self.StowageCaches = self.StowageCaches - 1
 
 		net.Start("zs_stowagecaches")
 			net.WriteInt(self.StowageCaches, 8)
 		net.Send(self)
-	end
+
 
 	local ammotype = self:GetResupplyAmmoType()
 	local amount = GAMEMODE.AmmoCache[ammotype]
 
-	for i = 1, stockpiling and not stowage and 2 or 1 do
 		net.Start("zs_ammopickup")
 			net.WriteUInt(amount, 16)
 			net.WriteString(ammotype)
@@ -967,7 +973,6 @@ function meta:Resupply(owner, obj)
 				net.WriteEntity(self)
 				net.WriteFloat(0.15)
 			net.Send(owner)
-		end
 	end
 
 	return true
@@ -1195,7 +1200,7 @@ function meta:DoHulls(classid, teamid)
 		self:SetViewOffsetDucked(DEFAULT_VIEW_OFFSET_DUCKED)
 		self:SetStepSize(DEFAULT_STEP_SIZE)
 		self:SetJumpPower(DEFAULT_JUMP_POWER)
-		self:SetGravity(1)
+		self:SetGravity(1-(self:IsSkillActive(SKILL_MOON_GRAVITY) and 0.33 or 0))
 		self:SetBloodColor(0)
 
 		self:DrawShadow(true)
@@ -1768,4 +1773,7 @@ function meta:SetChargesActive(charges)
 end
 function meta:AddChargesActive(int)
 	self:SetChargesActive(self:GetChargesActive()+int)
+end
+function meta:MetaAddScore(metascore)
+	self:SetNWInt('metascore', metascore)
 end

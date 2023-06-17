@@ -73,7 +73,7 @@ function GM:FinishMove(pl, move)
 		pt.LandSlow = false
 
 		vel = M_GetVelocity(move)
-		mul = 1 - 0.25 * (pt.FallDamageSlowDownMul or 1)
+		mul = 1.05 - ((pt.FallDamageSlowDownMul or 1)-1)
 		vel.x = vel.x * mul
 		vel.y = vel.y * mul
 		M_SetVelocity(move, vel)

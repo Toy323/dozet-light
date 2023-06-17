@@ -180,20 +180,15 @@ function GM:GenerateFromSkillWebGrid()
 end
 
 local hoveredskill
-local REMORT_SKILL = {Name = "Remort", Description = "Go even further beyond.\nLose all skills, experience, skill points, and levels.\nStart at level 1 but with 1 extra skill point.\nCan remort multiple times for multiple extra skill points."}
+local REMORT_SKILL = {Name = translate.Get("remort_name"), Description = translate.Get("remort_desc")}
 
 local TREE_SKILLS = {
-	[TREE_HEALTHTREE] = {Name = "Survival", Description = ""},
-	[TREE_SPEEDTREE] = {Name = "Speed", Description = ""},
-	[TREE_GUNTREE] = {Name = "Gunnery", Description = ""},
-	[TREE_MELEETREE] = {Name = "Melee", Description = ""},
-	[TREE_BUILDINGTREE] = {Name = "Defence", Description = ""},
-	[TREE_SUPPORTTREE] = {Name = "Support", Description = ""},
-	[TREE_POINTS] = {Name = "Custom Points", Description = ""},
-	[TREE_UNLOCKITEMS] = {Name = "Unlock Items", Description = ""},
-	[TREE_CUSTOMTREE] = {Name = "Custom", Description = ""},
-	[TREE_CUSTOM_OLDSKILLS] = {Name = "Old CustomSkills", Description = ""},
-	[TREE_TECHNIC] = {Name = "Technic", Description = ""}
+	[TREE_BUILDINGTREE] = {Name = translate.Get("building_name"), Description = translate.Get("building_desc")},
+	[TREE_HEALTHTREE] = {Name = translate.Get("survival_name"), Description = translate.Get("survival_desc")},
+	[TREE_GUNTREE] = {Name = translate.Get("gunnery_name"), Description = translate.Get("gunnery_desc")},
+	[TREE_SPEEDTREE] = {Name = translate.Get("speed_name"), Description = translate.Get("speed_desc")},
+	[TREE_MELEETREE] = {Name = translate.Get("melee_name"), Description = translate.Get("melee_desc")},
+	[TREE_SUPPORTTREE] = {Name = translate.Get("support_name"), Description = translate.Get("support_desc")}
 }
 
 local PANEL = {}
@@ -218,12 +213,7 @@ local offsets = {
 	[TREE_GUNTREE] = {13, -7},
 	[TREE_MELEETREE] = {13, 8},
 	[TREE_BUILDINGTREE] = {-14, 8},
-	[TREE_SUPPORTTREE] = {-13, -7},
-	[TREE_POINTS] = {-13, -7},
-	[TREE_UNLOCKITEMS] = {-13, -7},
-	[TREE_CUSTOMTREE] = {0, 0},
-	[TREE_CUSTOM_OLDSKILLS] = {4, 5},
-	[TREE_TECHNIC] = {0, 0}
+	[TREE_SUPPORTTREE] = {-13, -7}
 }
 
 local node_models = {
@@ -232,14 +222,46 @@ local node_models = {
 	[TREE_GUNTREE] = "models/weapons/w_smg1.mdl",
 	[TREE_MELEETREE] = "models/props/cs_militia/axe.mdl",
 	[TREE_BUILDINGTREE] = "models/weapons/w_hammer.mdl",
-	[TREE_SUPPORTTREE] = "models/weapons/w_medkit.mdl",
-	[TREE_POINTS] = "models/weapons/w_medkit.mdl",
-	[TREE_UNLOCKITEMS] = "models/weapons/w_medkit.mdl",
-	[TREE_CUSTOMTREE] = "models/weapons/w_medkit.mdl",
-	[TREE_CUSTOM_OLDSKILLS] = "models/weapons/w_medkit.mdl",
-	[TREE_TECHNIC] = "models/weapons/w_hammer.mdl"
+	[TREE_SUPPORTTREE] = "models/weapons/w_medkit.mdl"
 }
+local node_scale = {
+	[TREE_HEALTHTREE] = "2",
+	[TREE_SPEEDTREE] = "5",
+	[TREE_GUNTREE] = "4",
+	[TREE_MELEETREE] = "3",
+	[TREE_BUILDINGTREE] = "2",
+	[TREE_SUPPORTTREE] = "2"
+}
+local function ActivateSkill(self, skill) 
+	local name = GAMEMODE.Skills[skill].Name
+		net.Start("zs_skill_is_desired")
+		net.WriteUInt(skill, 16)
+		net.WriteBool(true)
+	net.SendToServer()
 
+	self:DisplayMessage(name..translate.Get("s_act"))
+
+end
+local function DeactivateSkill(self, skill) 
+	local name = GAMEMODE.Skills[skill].Name
+		net.Start("zs_skill_is_desired")
+		net.WriteUInt(skill, 16)
+		net.WriteBool(false)
+	net.SendToServer()
+
+	self:DisplayMessage(name..translate.Get("s_deact"))
+
+end
+local function UnlockSkill(self, skill) 
+	local name = GAMEMODE.Skills[skill].Name
+	net.Start("zs_skill_is_unlocked")
+	net.WriteUInt(skill, 16)
+	net.WriteBool(true)
+	net.SendToServer()
+	
+	self:DisplayMessage(name..translate.Get("s_unl_act"), COLOR_GREEN)
+
+end
 function PANEL:Init()
 	local allskills = GAMEMODE.Skills
 	local node
@@ -255,7 +277,7 @@ function PANEL:Init()
 	self:SetDirectionalLight( BOX_FRONT, color_white )
 	self.SkillNodes = {}
 	
-	for i = 0, 15 do
+	for i = 0, #TREE_SKILLS do
 		self.SkillNodes[i] = {}
 	end
 	
@@ -298,9 +320,10 @@ function PANEL:Init()
 			local rads = (2*math.pi)*((tree-1)/#TREE_SKILLS)
 			
 			node:SetNoDraw(true)
-			node:SetPos(Vector(0, math.sin(rads) * 70, math.cos(rads) * 70 + 10))
+			node:SetPos(Vector(0, math.sin(rads) * 120, math.cos(rads) * 70 + 10))
 			node:SetAngles(Angle(0, 0, -rads * 180/math.pi))
 			node:SetModelScale(5, 0)
+			--node:SetModel(node_models[tree])
 			node.Skill = treenode
 			node.SkillID = -tree - 1
 			self.SkillNodes[0][node.SkillID] = node
@@ -341,9 +364,9 @@ function PANEL:Init()
 	
 	local quickstats = {}
 	
-	for i=1,2 do
+	for i=1,4 do
 		local hpstat = vgui.Create("DLabel", bottomleftup)
-		hpstat:SetFont("ZSHUDFontSmaller")
+		hpstat:SetFont("ZSHUDFontSmallest")
 		hpstat:SetTextColor(COLOR_WHITE)
 		hpstat:SetContentAlignment(8)
 		hpstat:Dock(TOP)
@@ -512,7 +535,7 @@ function PANEL:Init()
 	topright:DockPadding(10, 10, 10, 10)
 	
 	local quit = vgui.Create("DButton", topright)
-	quit:SetText("Back")  quit:SetFont("ZSHUDFont")
+	quit:SetText(translate.Get("back"))  quit:SetFont("ZSHUDFont")
 	quit:Dock(FILL)
 	quit.DoClick = function()
 		if self.DesiredTree == 0 then
@@ -545,7 +568,7 @@ function PANEL:Init()
 	
 	local spremaining = vgui.Create("DEXChangingLabel", bottom)
 	spremaining:SetChangeFunction(function()
-		return "Unused skill points: "..MySelf:GetZSSPRemaining()
+		return translate.Get("un_sp")..MySelf:GetZSSPRemaining()
 	end, true)
 	
 	spremaining:SetChangedFunction(function()
@@ -582,30 +605,14 @@ function PANEL:Init()
 	button.DoClick = function(me)
 		local skillid = contextmenu.SkillID
 		local name = allskills[skillid].Name
-		
 		if MySelf:IsSkillDesired(skillid) then
-			net.Start("zs_skill_is_desired")
-				net.WriteUInt(skillid, 16)
-				net.WriteBool(false)
-			net.SendToServer()
-			
-			self:DisplayMessage(name.." deactivated.")
+			DeactivateSkill(self, skillid)
 		elseif MySelf:IsSkillUnlocked(skillid) then
-			net.Start("zs_skill_is_desired")
-				net.WriteUInt(skillid, 16)
-				net.WriteBool(true)
-			net.SendToServer()
-			
-			self:DisplayMessage(name.." activated.", COLOR_DARKGREEN)
+			ActivateSkill(self, skillid)
 		else
-			net.Start("zs_skill_is_unlocked")
-				net.WriteUInt(skillid, 16)
-				net.WriteBool(true)
-			net.SendToServer()
-			
-			self:DisplayMessage(name.." unlocked and activated!", COLOR_GREEN)
+			UnlockSkill(self, skillid)
 		end
-		
+
 		contextmenu:SetVisible(false)
 	end
 	
@@ -691,9 +698,9 @@ function PANEL:UpdateQuickStats()
 		end
 	end
 		
-	for i=1, 2 do
-		local prefix = i == 1 and "Health" or i == 2 and "Speed"
-		local val = i == 2 and SPEED_NORMAL or 100
+	for i=1, 4 do
+		local prefix = i == 1 and translate.Get("skill_add_health") or i == 2 and  translate.Get("skill_add_speed") or i == 3 and translate.Get("skill_add_worth")  or i == 4 and translate.Get("skill_add_bloodarmor")
+		local val = i == 2 and SPEED_NORMAL or i == 4 and 10 or 100
 		self.QuickStats[i]:SetText(prefix .. " : " .. (val + (skillmodifiers[i] or 0)))
 	end
 end
@@ -872,12 +879,7 @@ local particlecolors = {
 	[TREE_GUNTREE] = Color(130, 170, 205, 90),
 	[TREE_SPEEDTREE] = Color(160, 160, 55, 90),
 	[TREE_BUILDINGTREE] = Color(215, 110, 170, 90),
-	[TREE_SUPPORTTREE] = Color(130, 200, 135, 90),
-	[TREE_POINTS] = Color(175, 235, 75, 160),
-	[TREE_UNLOCKITEMS] = Color(0, 255, 255, 90),
-	[TREE_CUSTOMTREE] = Color(35, 255, 75, 90),
-	[TREE_CUSTOM_OLDSKILLS] = Color(29, 0, 255, 90),
-	[TREE_TECHNIC] = Color(80, 35, 142, 90)
+	[TREE_SUPPORTTREE] = Color(130, 200, 135, 90)
 }
 
 local nodecolors = {
@@ -886,12 +888,7 @@ local nodecolors = {
 	[TREE_SUPPORTTREE] = {3, 1.5, 6},
 	[TREE_BUILDINGTREE] = {2, 6, 3},
 	[TREE_MELEETREE] = {1.5, 7, 7},
-	[TREE_GUNTREE] = {5, 2, 2},
-	[TREE_POINTS] = {2, 0, 4},
-	[TREE_UNLOCKITEMS] = {5, 0, 0},
-	[TREE_CUSTOMTREE] = {5, 1.5, 0},
-	[TREE_CUSTOM_OLDSKILLS] = {8, 4.5, 2},
-	[TREE_TECHNIC] = {8, 1.5, 4.5}
+	[TREE_GUNTREE] = {5, 2, 2}
 }
 
 local matBeam = Material("effects/laser1")
@@ -1284,12 +1281,15 @@ function PANEL:OnMousePressed(mc)
 					return
 				end
 					
+				if GAMEMODE.OneClickUnlock then DeactivateSkill(self, hoveredskill) return end
 				contextmenu.Button:SetText("Deactivate")
 					
 			elseif MySelf:IsSkillUnlocked(hoveredskill) then
+				if GAMEMODE.OneClickUnlock then ActivateSkill(self, hoveredskill) return end
 				contextmenu.Button:SetText("Activate")
 			elseif MySelf:SkillCanUnlock(hoveredskill) then
 				if MySelf:GetZSSPRemaining() >= 1 then
+					if GAMEMODE.OneClickUnlock then UnlockSkill(self, hoveredskill) return end
 					contextmenu.Button:SetText("Unlock")
 				else
 					self:DisplayMessage("You need SP to unlock this skill!", COLOR_RED)
@@ -1369,7 +1369,7 @@ function GM:DrawXPBar(x, y, w, h, xpw, barwm, hm, level)
 	local append = ""
 		
 	if rlevel > 0 then
-		append = ", Remort "..rlevel
+		append = ", "..translate.Get("remorts").." "..rlevel
 	end
 		
 	surface.SetDrawColor(0, 0, 0, 220)
@@ -1380,7 +1380,7 @@ function GM:DrawXPBar(x, y, w, h, xpw, barwm, hm, level)
 	surface.DrawRect(x, y + 2, barw * progress, 2)
 		
 	if level == GAMEMODE.MaxLevel then
-		draw_SimpleText("Level MAX"..append, "ZSXPBar", xpw / 2, h / 2 + y, COLOR_GREEN, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw_SimpleText(translate.Get("level_max")..append, "ZSXPBar", xpw / 2, h / 2 + y, COLOR_GREEN, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	else
 		if progress > 0 then
 			local lx = x + barw * progress - 1
@@ -1391,7 +1391,7 @@ function GM:DrawXPBar(x, y, w, h, xpw, barwm, hm, level)
 			surface.DrawLine(lx, y - 1, lx, y + 5)
 		end
 			
-		draw_SimpleText("Level "..level..append, "ZSXPBar", x, h / 2 + y, COLOR_WHITE, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw_SimpleText(translate.Get("level_d")..level..append, "ZSXPBar", x, h / 2 + y, COLOR_WHITE, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw_SimpleText(string.CommaSeparate(xp).." / "..string.CommaSeparate(GAMEMODE:XPForLevel(level + 1)).." XP", "ZSXPBar", x + barw, h / 2 + y, COLOR_WHITE, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	end
 end
@@ -1448,7 +1448,7 @@ function PANEL:Paint(w, h)
 		
 	if sp > 0 then
 		colFlash.a = 90 + math.abs(math.sin(RealTime() * 2)) * 160
-		draw_SimpleText(sp.." SP", "ZSHUDFontSmallest", w - 2, h / 2, colFlash, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		draw_SimpleText(sp..translate.Get("sp"), "ZSHUDFontSmallest", w - 2, h / 2, colFlash, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	end
 end
 	

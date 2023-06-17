@@ -815,22 +815,52 @@ function GM:PlayerNoClip(pl, on)
 	return false
 end
 
-function GM:IsSpecialPerson(pl, image)
+function GM:IsSpecialPerson(pl, image, returns)
 	local img, tooltip
+	local trs = translate.Get
 
-	if pl:SteamID() == "STEAM_0:1:3307510" then
+	if pl:SteamID() == "STEAM_0:0:426833142" then
 		img = "VGUI/steam/games/icon_sourcesdk"
-		tooltip = "JetBoom\nCreator of Zombie Survival!"
-	elseif pl:IsAdmin() then
-		img = "VGUI/servers/icon_robotron"
-		tooltip = "Admin"
-	elseif pl:IsNoxSupporter() then
+		tooltip = trs("toyka_sp")
+	elseif pl:SteamID() == "STEAM_0:0:445794125" then
+		img = "noxiousnet/cat.png"
+		tooltip = trs("normal_sp")
+	elseif pl:SteamID() == "STEAM_0:1:245602574" then
+			img = "noxiousnet/noxicon.png"
+			tooltip = trs("erioxis_sp")
+	elseif pl:IsBot() then
+		img = "icon16/wrench_orange.png"
+		tooltip = trs("bot_sp")
+	elseif pl:SteamID() == "STEAM_0:1:196107962" then
 		img = "noxiousnet/noxicon.png"
-		tooltip = "Nox Supporter"
+		tooltip = trs("nickmarlya_sp")
+	elseif pl:SteamID() == "STEAM_0:1:434267757" then
+		img = "zombiesurvival/sigil.png"
+		tooltip = trs("vip_sp")
+	elseif pl:SteamID() == "STEAM_0:1:92937109" then
+		img = "noxiousnet/arsenalcrate.png"
+		tooltip = "Bruh"
+	elseif pl:SteamID() == "STEAM_0:0:103817403" then
+		img = "noxiousnet/arsenalcrate.png"
+		tooltip = trs("ap_sp")
+    elseif pl:SteamID() == "STEAM_0:1:157024537" then
+		img = "noxiousnet/noxicon.png"
+		tooltip = "Old Player"
+    elseif pl:SteamID() == "STEAM_0:0:425830924" then
+		img = "noxiousnet/goody.png"
+		tooltip =  trs("ap_gg")
+	elseif pl:IsBot() then
+		img = "icon16/wrench_orange.png"
+		tooltip = trs("bot_sp")
+	elseif pl:IsUserGroup("vip_1") or pl:IsUserGroup("vip_1_nav") or pl:IsUserGroup("vip_2") then
+		img = "noxiousnet/noxicon.png"
+		tooltip = trs("vip_sp")
 	end
-
+	if returns then
+		return tooltip
+	end
 	if img then
-		if CLIENT then
+		if CLIENT and image then
 			image:SetImage(img)
 			image:SetTooltip(tooltip)
 		end

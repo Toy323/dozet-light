@@ -30,6 +30,15 @@ GM.GetActiveTrinkets = {
 }
 
 
+GM.MedPremium = {
+	"trinket_pr_gold",
+	"trinket_pr_barapaw",
+	"trinket_pr_chamomile",
+	"trinket_pr_bloodpack",
+	"trinket_soulmedical"
+}
+
+
 
 function GM:AddWorldPropConversionRecipe(model, result)
 	local datatab = {Result = result, Index = wcindex}

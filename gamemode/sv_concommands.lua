@@ -5,7 +5,8 @@ end
 
 concommand.Add("zs_pointsshopbuy", function(sender, command, arguments)
 	if not (sender:IsValid() and sender:IsConnected() and sender:IsValidLivingHuman()) or #arguments == 0 then return end
-	local usescrap = arguments[2]
+	local num = arguments[2]
+	local usescrap = arguments[3]
 
 	local midwave = GAMEMODE:GetWave() < GAMEMODE:GetNumberOfWaves() / 2 or GAMEMODE:GetWave() == GAMEMODE:GetNumberOfWaves() / 2 and GAMEMODE:GetWaveActive() and CurTime() < GAMEMODE:GetWaveEnd() - (GAMEMODE:GetWaveEnd() - GAMEMODE:GetWaveStart()) / 2
 	if sender:IsSkillActive(SKILL_D_LATEBUYER) and not usescrap and midwave then

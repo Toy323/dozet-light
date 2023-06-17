@@ -25,26 +25,7 @@ function ENT:Think()
 			local ang = self:GetAngles()
 			ang:RotateAroundAxis(ang:Up(), 180)
 
-			local ent = ents.Create("prop_weapon")
-			if ent:IsValid() then
-				ent:SetWeaponType(self.BaseWeapon)
-				ent:SetPos(self:GetPos())
-				ent:SetAngles(ang)
-				ent:Spawn()
-
-				local owner = self:GetOwner()
-				if owner:IsValidHuman() then
-					ent.NoPickupsTime = CurTime() + 15
-					ent.NoPickupsOwner = self:GetOwner()
-				end
-
-				local phys = ent:GetPhysicsObject()
-				if phys:IsValid() then
-					phys:Wake()
-					phys:AddAngleVelocity(VectorRand() * 120)
-					phys:SetVelocityInstantaneous(Vector(0, 0, 200))
-				end
-			end
+			self:GetOwner():Give(self.BaseWeapon)
 
 			self:Remove()
 		end

@@ -19,7 +19,7 @@ local colAlt = Color(80, 255, 120, 255)
 local COLOR_WHITE = color_white
 local trace = {mask = MASK_SHOT}
 function ENT:DrawTranslucent()
-	if not self:IsActive() then return end
+	if not self:IsActive() or !MySelf:KeyDown(IN_SPEED) then return end
 
 	local alt = self:GetDTBool(0)
 	local beamcol = alt and colAlt or colBeam

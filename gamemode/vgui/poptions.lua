@@ -1,3 +1,4 @@
+local trs = translate.Get
 function MakepOptions()
 	PlayMenuOpenSound()
 
@@ -217,6 +218,12 @@ function MakepOptions()
 	check = vgui.Create("DCheckBoxLabel", Window)
 	check:SetText("Show damage indicators through walls")
 	check:SetConVar("zs_damagefloaterswalls")
+	check:SizeToContents()
+	list:AddItem(check)
+
+	check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText(trs("op_one_click"))
+	check:SetConVar("zs_one_click_unlock")
 	check:SizeToContents()
 	list:AddItem(check)
 

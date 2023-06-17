@@ -95,6 +95,12 @@ cvars.AddChangeCallback("zs_disablescopes", function(cvar, oldvalue, newvalue)
 	GAMEMODE.DisableScopes = tonumber(newvalue) == 1
 end)
 
+GM.OneClickUnlock = CreateClientConVar("zs_one_click_unlock", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_one_click_unlock", function(cvar, oldvalue, newvalue)
+	GAMEMODE.OneClickUnlock = tonumber(newvalue) == 1
+end)
+
+
 GM.IronsightZoomScale = math.Clamp(CreateClientConVar("zs_ironsightzoom", 1, true, false):GetFloat(), 0, 1)
 cvars.AddChangeCallback("zs_ironsightzoom", function(cvar, oldvalue, newvalue)
 	GAMEMODE.IronsightZoomScale = math.Clamp(tonumber(newvalue) or 1, 0, 1)

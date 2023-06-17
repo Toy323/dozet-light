@@ -88,6 +88,10 @@ hook.Add("Initialize", "LoadCarts", function()
 		GAMEMODE.SavedCarts = Deserialize(file.Read(GAMEMODE.CartFile)) or {}
 	end
 end)
+--hook.Add("PlayerInitialSpawnRound", "LoadCarts2", function(pl)
+--	if GAMEMODE:GetWave() >= 1 then
+	--end
+--end)
 
 local function ClearCartDoClick()
 	for _, btn in ipairs(WorthButtons) do
@@ -97,6 +101,10 @@ local function ClearCartDoClick()
 	end
 
 	surface.PlaySound("buttons/button11.wav")
+end
+local function OpenArsenal(self)
+	GAMEMODE:OpenArsenalMenu()
+	pWorth:Close()
 end
 
 local function ClickWorthButton(id)
@@ -218,9 +226,9 @@ function MakepWorth()
 	topspace:SetWide(wid * 0.75)
 	topspace:SetPaintBackground(false)
 
-	local title = EasyLabel(topspace, "The Worth Menu", "ZSHUDFontSmall", COLOR_WHITE)
+	local title = EasyLabel(topspace, translate.Get("pworth"), "ZSHUDFontSmall", COLOR_WHITE)
 	title:CenterHorizontal()
-	local subtitle = EasyLabel(topspace, "Select the items you're going to start with this round.", "ZSHUDFontTiny", COLOR_WHITE)
+	local subtitle = EasyLabel(topspace, translate.Get("pworth_sel"), "ZSHUDFontTiny", COLOR_WHITE)
 	subtitle:CenterHorizontal()
 	subtitle:MoveBelow(title, 4)
 
@@ -274,12 +282,25 @@ function MakepWorth()
 		local cartpan = vgui.Create("DEXRoundedPanel")
 		cartpan:SetCursor("pointer")
 		cartpan:SetSize(list:GetWide(), panhei)
+		local priceall = 0
+		local names = ""
+		for k, v in ipairs(savetab) do
+			if type(v) == "table" then
+				for _, name in pairs(v) do
+					priceall = (FindStartingItem(name) and FindStartingItem(name).Worth or 0) + priceall
+					names = (FindStartingItem(name) and (FindStartingItem(name).Name or weapons.Get(FindStartingItem(name)).PrintName) or "?")..","..names
 
+				end
+			end
+		end
+		--local priceall = translate.Get("w_cost")..priceall
+		names = string.sub(names,0, string.len(names)-1)
+		
 		local cartname = savetab[1]
 
 		local x = 8
 		local limitedscale = math.Clamp(screenscale, 1, 1.5)
-
+		lol = 0
 		if defaultcart == cartname then
 			local defimage = vgui.Create("DImage", cartpan)
 			defimage:SetImage("icon16/heart.png")
@@ -287,12 +308,15 @@ function MakepWorth()
 			defimage:SetSize(16 * limitedscale, 16 * limitedscale)
 			defimage:SetMouseInputEnabled(true)
 			defimage:SetTooltip("This is your default cart.\nIf you join the game late then you'll spawn with this cart.")
-			defimage:SetPos(x, cartpan:GetTall() * 0.5 - defimage:GetTall() * 0.5)
+			defimage:SetPos(x, cartpan:GetTall() * 0.3 - defimage:GetTall() * 0.5)
 			x = x + defimage:GetWide() + 4
+			lol = defimage:GetWide()
 		end
 
-		local cartnamelabel = EasyLabel(cartpan, cartname, panfont)
-		cartnamelabel:SetPos(x, cartpan:GetTall() * 0.5 - cartnamelabel:GetTall() * 0.5)
+		local cartnamelabel = EasyLabel(cartpan, cartname.." - "..translate.Get("w_cost")..priceall, panfont)
+		cartnamelabel:SetPos(x, cartpan:GetTall() * 0.3 - cartnamelabel:GetTall() * 0.5)
+		local cartnamelabel2 = EasyLabel(cartpan, names, nil, Color(238,255,87))
+		cartnamelabel2:SetPos(x - (defaultcart == cartname and lol + 4 or 0), cartpan:GetTall() * 0.76 - cartnamelabel2:GetTall() * 0.2)
 
 		x = cartpan:GetWide()
 
@@ -367,7 +391,7 @@ function MakepWorth()
 		end
 	end
 
-	local worthlab = EasyLabel(frame, "Worth: "..tostring(remainingworth), "ZSHUDFontSmall", COLOR_LIMEGREEN)
+	local worthlab = EasyLabel(frame, translate.Get("w_cost")..tostring(remainingworth), "ZSHUDFontSmall", COLOR_LIMEGREEN)
 	worthlab:SetPos(8, frame:GetTall() - worthlab:GetTall() - 8)
 	frame.WorthLab = worthlab
 
@@ -387,6 +411,14 @@ function MakepWorth()
 	randombutton:AlignBottom(8)
 	randombutton:AlignRight(8)
 	randombutton.DoClick = RandDoClick
+	
+	local arsop = vgui.Create("DButton", frame)
+	arsop:SetFont("ZSHUDFontTiny")
+	arsop:SetText(translate.Get("gui_oa"))
+	arsop:SetSize(190 * screenscale, 16 * screenscale)
+	arsop:AlignBottom(8)
+	arsop:AlignRight(128)
+	arsop.DoClick = OpenArsenal
 
 	local clearbutton = vgui.Create("DButton", frame)
 	clearbutton:SetFont("ZSHUDFontTiny")
@@ -536,7 +568,12 @@ function PANEL:SetWorthID(id)
 		self.PriceLabel:SetTextColor(COLOR_RED)
 		self.PriceLabel:SetText(GAMEMODE.Skills[tab.SkillRequirement].Name)
 	elseif tab.Price then
-		self.PriceLabel:SetText(tostring(tab.Price).." Worth")
+		local pr = tab.Price
+		if pr < 0 then
+			pr = "+"..(tab.Price*-1)
+			self.PriceLabel:SetTextColor(COLOR_GREEN)
+		end
+		self.PriceLabel:SetText(pr.." Worth")
 	else
 		self.PriceLabel:SetText("")
 	end

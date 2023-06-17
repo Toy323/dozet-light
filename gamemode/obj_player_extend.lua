@@ -237,6 +237,7 @@ function meta:NearArsenalCrate()
 	local arseents = {}
 	table.Add(arseents, ents.FindByClass("prop_arsenalcrate"))
 	table.Add(arseents, ents.FindByClass("status_arsenalpack"))
+	table.Add(arseents, ents.FindByClass("prop_obj_sigil"))
 
 	for _, ent in pairs(arseents) do
 		local nearest = ent:NearestPoint(pos)
@@ -1006,4 +1007,7 @@ function meta:GetPhantomHealth()
 end
 function meta:GetChargesActive()
 	return self:GetDTInt(DT_PLAYER_INT_ACTIV)
+end
+function meta:GetMScore()
+	return self:GetNWInt('metascore', metascore)	
 end

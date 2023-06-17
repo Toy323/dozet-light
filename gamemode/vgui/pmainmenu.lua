@@ -193,7 +193,7 @@ function GM:ShowHelp()
 	but:DockMargin(0, 0, 0, 12)
 	but:DockPadding(0, 12, 0, 12)
 	but:Dock(TOP)
-	but.DoClick = function() MakepStatuss() end
+	--but.DoClick = function() MakepStatuss() end
 
 	but = vgui.Create("DButton", menu)
 	but:SetFont("ZSHUDFontSmaller")
