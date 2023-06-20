@@ -120,17 +120,6 @@ GM:AddInventoryItemData("cons_xmas_goodness",		trs("c_new_year"),			trs("c_new_y
 end,1)
 GM:AddInventoryItemData("cons_bounty",		trs("c_bounty"),			trs("c_bounty_d"),								"models/props_c17/trappropeller_lever.mdl", 3, nil, nil, function(pl) 
 	local tbl = {"headshoter", "ind_buffer", "ultra_at", "pearl","broken_world","whysoul","altevesoul"} 
-	if pl:IsSkillActive(SKILL_SINS_2) then
-		tbl = {"headshoter", "ind_buffer", "ultra_at", "pearl","broken_world","whysoul","altevesoul","sin_greed",
-		"sin_wrath",
-	"sin_gluttony",
-	"sin_sloth",
-	"sin_envy",
-	"sin_pride",
-	"sin_ego",
-    "sin_lust"
-	} 
-	end
 	if pl.MedicalBounty then
 		tbl = GAMEMODE.MedPremium
 	end
@@ -176,39 +165,6 @@ GM:AddInventoryItemData("cons_flame_p",		trs("c_flame_p"),			trs("c_flame_p_d"),
 	if pl:HasWeapon("weapon_zs_molotov") then pl:GiveAmmo(1, "molotov") return end
 	pl:Give("weapon_zs_molotov")
 end,3)
-GM:AddInventoryItemData("cons_grandma_vase",		trs("c_grandma"),			trs("c_grandma_d"),								"models/props_c17/trappropeller_lever.mdl", 3, nil, nil, function(pl) 
-	local droped = ents.Create("projectile_purgatory_soul")
-	droped:SetPos(pl:GetPos()+Vector(0,0,70))
-	droped:Spawn()
-	droped.TimeToDash = CurTime() + 0.3
-	droped.DamageToDeal = 350
-	droped:SetOwner(pl)
-	if math.randomr(1,100,1,pl) == 1 then
-		for i=1,9 do
-			local droped = ents.Create("projectile_purgatory_soul")
-			droped:SetPos(pl:GetPos()+Vector(0,0,70))
-			droped:Spawn()
-			droped.TimeToDash = CurTime() + 0.3 + 0.7 * i
-			droped.DamageToDeal = 350
-			droped:SetOwner(pl)
-		end
-	end
-end,1)
-GM:AddInventoryItemData("cons_devolver",		trs("c_devo"),			trs("c_devo_d"),								"models/props_c17/trappropeller_lever.mdl", 8, nil, nil, function(pl) 
-	for k,v in pairs(ents.FindInBoxRadius(pl:GetPos(),100)) do
-		if v:IsValid() and v:GetClass() == "prop_invitem" then
-			local inv = v:GetInventoryItemType()
-			local tbl = GAMEMODE.ZSInventoryItemData[inv]
-			local d = string.Explode(" " ,string.lower(tbl.PrintName))
-			if (table.HasValue(d, "soul") or pl:IsSkillActive(SKILL_SISYS_ROCK) and table.HasValue(d, "sin")) then
-				if tbl.Tier then
-					pl:SetPoints(pl:GetPoints()+30*(tbl.Tier or 1))
-				end
-				v:Remove()
-			end
-		end
-	end
-end,8)
 GM:AddInventoryItemData("cons_black_hole",		trs("c_bhole"),			trs("c_bhole_d"),								"models/props_c17/trappropeller_lever.mdl", 3, nil, nil, function(pl) 
 	local droped = ents.Create("projectile_succubus_test")
 	droped:SetPos(pl:GetPos()+Vector(0,0,70))
@@ -216,32 +172,6 @@ GM:AddInventoryItemData("cons_black_hole",		trs("c_bhole"),			trs("c_bhole_d"),	
 	droped:SetOwner(pl)
 	--droped:SetParent(pl)
 end,4)
-GM:AddInventoryItemData("cons_minos",		trs("c_minos"),			trs("c_minos_d"),								"models/props_c17/trappropeller_lever.mdl", 3, nil, nil, function(owner) 
-	local ent = ents.Create("projectile_mprime_proj_act")
-	if ent:IsValid() then
-		ent:SetPos(owner:GetShootPos())
-		ent:SetAngles(owner:EyeAngles())
-		ent:SetOwner(owner)
-		ent.ProjDamage = 320 
-		ent.ProjSource = owner
-		ent.ShotMarker = i
-		ent.Team = owner:Team()
-
-		ent:Spawn()
-
-		local phys = ent:GetPhysicsObject()
-		if phys:IsValid() then
-			phys:Wake()
-
-			local angle = owner:GetAimVector():Angle()
-			angle:RotateAroundAxis(angle:Forward(), ssfw or math.Rand(0, 360))
-			angle:RotateAroundAxis(angle:Up(), ssup or math.Rand(0, 0))
-
-			ent.PreVel = angle:Forward() * 2600 * (owner.ProjectileSpeedMul or 1)
-			phys:SetVelocityInstantaneous(ent.PreVel)
-		end
-	end
-end,2)
 GM:AddInventoryItemData("cons_d4",		"D4",			trs("c_d4_d"),								 {
 	["d4_p1"] = { type = "Model", model = "models/phxtended/trieq2x2x2solid.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(-2.435, 2.438, -4.36), angle = Angle(0, 0, 0), size = Vector(0.123, 0.123, 0.123), color = Color(13, 116, 0, 255), surpresslightning = true, material = "plastic/plasticwall001a", skin = 0, bodygroup = {} },
 	["d4_p1+"] = { type = "Model", model = "models/dav0r/hoverball.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(0.114, -4.167, -4.41), angle = Angle(0, 0, 0), size = Vector(0.223, 0.223, 0), color = Color(27, 51, 24, 255), surpresslightning = true, material = "plastic/plasticwall001a", skin = 0, bodygroup = {} },

@@ -11,6 +11,8 @@
 	util.AddNetworkString("zs_zvols")
 	util.AddNetworkString("zs_nextboss")
 	util.AddNetworkString("zs_classunlock")
+	util.AddNetworkString("zs_bounty_add")
+	util.AddNetworkString("zs_upgradeitem")
 	util.AddNetworkString("zs_sigilcorrupted")
 	util.AddNetworkString("zs_sigiluncorrupted")
 	util.AddNetworkString("zs_survivor")

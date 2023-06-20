@@ -60,7 +60,6 @@ net.Receive("zs_bounty_add", function(len, pl)
 	if !pl:HasInventoryItem("cons_bounty") then return end
 	local item = net.ReadString()
 	pl:AddInventoryItem(item)
-	pl.GetBounty = nil
 	pl.MedicalBounty = nil
 	pl.SeededBounty = nil
 	pl:TakeInventoryItem("cons_bounty")
