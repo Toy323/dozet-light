@@ -223,7 +223,10 @@ function GM:AddResources()
 	resource.AddFile("resource/fonts/typenoksidi.ttf")
 	resource.AddFile("resource/fonts/hidden.ttf")
 	resource.AddFile("resource/fonts/ghoulfriaoe.ttf")
+	resource.AddFile("resource/fonts/ghoulfriaoe_upd.ttf")
+	resource.AddFile("resource/fonts/agencyfb_reg.ttf")
 	resource.AddFile("resource/fonts/remingtonnoiseless.ttf")
+	resource.AddFile("resource/fonts/treb.ttf")
 
 	resource.AddFile("particles/vman_explosion.pcf")
 

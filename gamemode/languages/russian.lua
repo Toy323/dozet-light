@@ -425,19 +425,19 @@ LANGUAGE.remorts = "Перерождений: "
 LANGUAGE.remort_name = "Перерождение"
 LANGUAGE.remort_desc = "Иди же дальше.\nПотеряй все - навыки,опыт,уровни.\nНачни с 1 уровнем но с 1 дополнительным очком прокачки.\nМожно перерождаться множество раз чтобы получать дополнительные очки прокачки."
 
-LANGUAGE.survival_name = "Выживание"
+LANGUAGE.survival_name = "Здоровье"
 LANGUAGE.survival_desc = "Тут собраны навыки для выживания,для начала эта ветка хороша."
 
-LANGUAGE.gunnery_name = "Стрелок"
+LANGUAGE.gunnery_name = "Стрельба"
 LANGUAGE.gunnery_desc = "Идеальная ветка навыков для начала.\nНавыки для пушек,проджектайлов пушек и бросания"
 
-LANGUAGE.speed_name = "Скорость"
+LANGUAGE.speed_name = "Ловкость"
 LANGUAGE.speed_desc = "Ветка навыков для скорости.\nВетка не для новичков"
 
-LANGUAGE.support_name = "Помощь"
+LANGUAGE.support_name = "Медицина"
 LANGUAGE.support_desc = "Ветка навыков для медиков,больше подходит для ветки скорости.\nВетка хорошая для новичков"
 
-LANGUAGE.building_name = "Баррикадирование"
+LANGUAGE.building_name = "Оборона"
 LANGUAGE.building_desc = "Ветка навыков для построек,кейдеров и починки.\nНеплохая ветка для старта."
 
 LANGUAGE.melee_name = "Ближний бой"

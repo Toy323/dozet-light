@@ -272,7 +272,7 @@ function PANEL:Init()
 	self:SetCamPos( Vector( 15000, 0, 0 ) )
 	self:SetLookAt( Vector( 0, 0, 0 ) )
 	self:SetFOV(6)
-	self:SetAmbientLight( Color( 50, 50, 50 ) )
+	self:SetAmbientLight( Color( 31, 162, 1518) )
 	self:SetDirectionalLight( BOX_TOP, color_white )
 	self:SetDirectionalLight( BOX_FRONT, color_white )
 	self.SkillNodes = {}
@@ -320,9 +320,11 @@ function PANEL:Init()
 			local rads = (2*math.pi)*((tree-1)/#TREE_SKILLS)
 			
 			node:SetNoDraw(true)
-			node:SetPos(Vector(0, math.sin(rads) * 120, math.cos(rads) * 70 + 10))
+			node:SetPos(Vector(0, math.sin(rads) * 70, math.cos(rads) * 70 + 10))
 			node:SetAngles(Angle(0, 0, -rads * 180/math.pi))
 			node:SetModelScale(5, 0)
+			
+			
 			--node:SetModel(node_models[tree])
 			node.Skill = treenode
 			node.SkillID = -tree - 1
@@ -807,7 +809,7 @@ function PANEL:GenerateParticles()
 		particles[i] = particle
 	end
 		
-	self.Particles = particles 
+	--self.Particles = particles 
 end
 	
 function PANEL:PerformLayout()
@@ -874,12 +876,12 @@ function PANEL:DoEdgeScroll(deltatime)
 end
 	
 local particlecolors = {
-	[TREE_HEALTHTREE] = Color(210, 150, 105, 90),
-	[TREE_MELEETREE] = Color(180, 111, 111, 90),
-	[TREE_GUNTREE] = Color(130, 170, 205, 90),
-	[TREE_SPEEDTREE] = Color(160, 160, 55, 90),
-	[TREE_BUILDINGTREE] = Color(215, 110, 170, 90),
-	[TREE_SUPPORTTREE] = Color(130, 200, 135, 90)
+	[TREE_HEALTHTREE] = Color(207, 57, 46),
+	[TREE_MELEETREE] = Color(150, 27, 27),
+	[TREE_GUNTREE] = Color(17, 56, 90),
+	[TREE_SPEEDTREE] = Color(102, 114, 42),
+	[TREE_BUILDINGTREE] = Color(156, 1, 89),
+	[TREE_SUPPORTTREE] = Color(120, 185, 125)
 }
 
 local nodecolors = {
@@ -890,12 +892,13 @@ local nodecolors = {
 	[TREE_MELEETREE] = {1.5, 7, 7},
 	[TREE_GUNTREE] = {5, 2, 2}
 }
-
+local matNode = Material("materials/skillweb/node.png")
 local matBeam = Material("effects/laser1")
 local matGlow = Material("sprites/glow04_noz")
 local matSmoke = Material("sprites/glow04_noz")
 local matWhite = Material("models/debug/debugwhite")
 local matGear = Material("models/shadertest/shader2")
+local matSome  = Material("skillweb/big_background_filter.png")
 local colBeam = Color(0, 0, 0)
 local colBeam2 = Color(255, 255, 255)
 local colSmoke = Color(140, 160, 185, 160)
@@ -911,11 +914,19 @@ function PANEL:Paint(w, h)
 	local add, pos_a, pos_b, sat
 	local size, desc, ang   self:DoEdgeScroll(dt)
 	local campos = self.vCamPos
+	local screen = BetterScreenScale()
 		
 	campos.x = math.Approach(campos.x, self.DesiredZoom, dt * 13500)
 	self:SetCamPos(campos)
-	surface.SetDrawColor(0, 0, 0, 252)
-	surface.DrawRect(0, 0, w, h)
+
+	surface.SetAlphaMultiplier(0.3)
+	surface.SetDrawColor(23, 190, 223)
+	--ocal num = self.DesiredTree
+	--if num  and particlecolors[num] then
+		--surface.SetDrawColor(particlecolors[num].r, particlecolors[num].g, particlecolors[num].b, 120)
+	--end
+	surface.SetAlphaMultiplier(1)
+	surface.DrawRect(0, 0, w,h)
 	ang = self.aLookAngle
 		
 	if not ang then
@@ -929,7 +940,11 @@ function PANEL:Paint(w, h)
 	cam.Start3D( self.vCamPos, ang, self.fFOV, 0, 0, w, h, 5, self.FarZ )
 	cam.IgnoreZ( true )
 	render_SuppressEngineLighting( true )
+--	render.SetMaterial(matSome)
+--	render.SetColorModulation(1,1,1)
+	--render.DrawQuadEasy(Vector(0,0,0), to_camera, 1920 * screen,1080 * screen, Color(205,25,25,255), 0)
 	render.SetLightingOrigin( vector_origin )
+	render.SetAmbientLight(0,2,2)
 	render.ResetModelLighting( self.colAmbientLight.r / 255, self.colAmbientLight.g / 255, self.colAmbientLight.b / 255 )
 		
 	for i=0, 55 do
@@ -940,14 +955,14 @@ function PANEL:Paint(w, h)
 		end
 	end
 		
-	local particles = self.Particles
-	render.SetMaterial(matSmoke)
+	--local particles = self.Particles
+	--render.SetMaterial(matSmoke)
 		
-	for i, particle in pairs(particles) do
-		particle[2] = particle[2] + particle[3] * dt
-		colSmoke.a = particle[5]
-		render.DrawQuadEasy(particle[1], to_camera, particle[4], particle[4] * 1, particlecolors[self.DesiredTree] or colSmoke, particle[2])
-	end
+	--for i, particle in pairs(particles) do
+		--particle[2] = particle[2] + particle[3] * dt
+		--colSmoke.a = particle[5]
+		--render.DrawQuadEasy(particle[1], to_camera, particle[4], particle[4] * 1, particlecolors[self.DesiredTree] or colSmoke, particle[2])
+	--end
 		
 	local skillnodes = self.SkillNodes[self.DesiredTree]
 	local campost = self.vCamPos
@@ -1084,31 +1099,26 @@ function PANEL:Paint(w, h)
 				notunlockable = true
 			end
 				
-			if skillid <= -2 then
-				render_ModelMaterialOverride()
-				render_SetBlend(0.95)
-				node:SetModelScale(3.7)
+
+			if skillid > 0 then
+				render_ModelMaterialOverride(matWhite)
+				render_SetBlend(skillid == 1 and 0.2 or 0.95)
 				node:DrawModel()
-				node:SetModelScale(3.8)
+				render_SetBlend(1)
+				render_SetColorModulation(1, 1, 1)
 			end
-				
-			render_ModelMaterialOverride(matWhite)
-			render_SetBlend(skillid <= -2 and 0.2 or 0.95)
-			node:DrawModel()
-			render_SetBlend(1)
-			render_SetColorModulation(1, 1, 1)
 				
 			if self.DesiredZoom < 9500 then
 				local colo = skill.Disabled and COLOR_DARKGRAY or selected and color_white or notunlockable and COLOR_GRAY or COLOR_NEARGRAY
 				local skill_text_y = skillid <= -2 and 100 or 0
-				draw_SimpleText(skill.Name, skillid <= -1 and "ZS3D2DFont2Big" or "ZS3D2DFont2Small", 0, skill_text_y, colo, TEXT_ALIGN_CENTER)
+				draw_SimpleText(skill.Name, skillid <= -1 and "ZS3D2DFont2Big_rob" or "ZS3D2DFont2Small", 0, skill_text_y, colo, TEXT_ALIGN_CENTER) -- Robotic Bold 128
 					
 				if skillid <= -2 and self.TreeCount[-skillid - 1] then
-					draw_SimpleText((self.Progress[-skillid - 1] or 0) ..  "/" .. self.TreeCount[-skillid - 1], "ZS3D2DFont2Big", 0, skill_text_y + 130, colo, TEXT_ALIGN_CENTER)
+					draw_SimpleText((self.Progress[-skillid - 1] or 0) ..  "/" .. self.TreeCount[-skillid - 1], "ZS3D2DFont2Big_rob", 0, skill_text_y + 130, colo, TEXT_ALIGN_CENTER)
 				end
 			end
 			local xskill = 32
-			if (type(GAMEMODE.SkillModifiers[skillid]) == "table" and table.Count(GAMEMODE.SkillModifiers[skillid]) or 0) > 0 and skillid == hoveredskill then
+			if skillid == hoveredskill and (type(GAMEMODE.SkillModifiers[skillid]) == "table" and table.Count(GAMEMODE.SkillModifiers[skillid]) or 0) > 0 then
 				for k,v in pairs(GAMEMODE.SkillModifiers[skillid]) do
 					local i = v or 1
 
@@ -1129,7 +1139,7 @@ function PANEL:Paint(w, h)
 						else
 							col = Color(255,255,255)
 						end
-						xskill= xskill + 32 * BetterScreenScale()
+						xskill= xskill + 32 * screen
 					draw_SimpleText(translate.Format("skillmod_n"..k,i),"ZS3D2DFont2Small", 0, xskill-26, col, TEXT_ALIGN_CENTER)
 				end
 			end
@@ -1138,15 +1148,29 @@ function PANEL:Paint(w, h)
 			surface.DisableClipping(false)
 			cam.End3D2D()
 			render.SetMaterial(matGlow)
+			if skillid <= -2 then
+				--print((skillid*-1-1))
+				render.SetMaterial(Material("materials/skillweb/"..(skillid*-1-1).."_web.png"))
+			elseif skillid == -1 then
+				render.SetMaterial(matNode)
+			end
 				
 			if skillid <= -1 then
 				if skillid == -1 and can_remort then
 					local size = 32
-					render.DrawQuadEasy(nodepos, to_camera, size, size, color_white, angle)
-				elseif skillid <= -2 then
+					render.SetMaterial(matGlow)
+					render.DrawQuadEasy(nodepos+Vector(0,0,5), to_camera, size, size, color_white, angle)
+				elseif skillid == -1 then
 					local size = 65
-					render.DrawQuadEasy(nodepos, to_camera, size/2, size/2, Color(166, 166, 166), angle)
-					render.DrawQuadEasy(nodepos, to_camera, size, size, particlecolors[-skillid - 1] or color_white, angle)
+					render.DrawQuadEasy(nodepos+Vector(0,0,5), to_camera, size/2, size/2, Color(255, 255, 255), 0)
+					render.SetMaterial(matGlow)
+					render.DrawQuadEasy(nodepos+Vector(0,0,5), to_camera, size, size, color_white, angle)
+				else
+					local size = 65
+					local p = 1.25 - math.abs(math.sin(realtime * math.pi)) * 0.25
+					render.DrawQuadEasy(nodepos, to_camera, size/3* (selected and p or 1), size/3 * (selected and p or 1), Color(255, 255, 255), 180)
+					render.SetMaterial(matGlow)
+					render.DrawQuadEasy(nodepos, to_camera, size, size, Color(166, 166, 166), angle)
 				end
 			elseif not skill.Disabled then
 				colGlow.r = sat * 255
@@ -1173,10 +1197,9 @@ function PANEL:Paint(w, h)
 		
 	if intersectpos then
 		intersectpos = intersectpos + Vector(16, 0, 0)
-		render.SetMaterial(matGlow)
+		render.SetMaterial(matGlow) --  Material("materials/skillweb/melee_web.png")
 		render.DrawQuadEasy(intersectpos, to_camera, 12, 12, color_white, realtime * 90)
 	end
-		
 	render_SuppressEngineLighting(false)
 	cam.IgnoreZ(false)
 	cam.End3D()
@@ -1189,8 +1212,36 @@ function PANEL:Paint(w, h)
 			self.SkillName:SizeToContents()
 			desc = string.Explode("\n", skill.Description)
 			local txt, colid
-				
-			for i=1, 5 do
+			local used = 0
+			if GAMEMODE.SkillModifiers[hoveredskill] then
+				for k,v in pairs(GAMEMODE.SkillModifiers[hoveredskill]) do
+					local i = v or 1
+					used = used + 1
+
+					if k >= 6 and !table.HasValue(exlude2, k) then
+						i = (i*100).."%"
+					end
+					if (v or 0) > 0 then
+						i = "+"..i
+					end
+					local colorred = table.HasValue(exlude, k) and Color(71,231,119) or Color(238,37,37)
+					local colorgreen = table.HasValue(exlude, k) and Color(238,37,37) or Color(71,231,119)
+						--translate.Format("skillmod_n"..i,c)
+						if (v or 0) < 0 then
+							col = colorred
+						elseif (v or 0) > 0 then
+							col = colorgreen
+						else
+							col = Color(255,255,255)
+						end
+					self.SkillDesc[used]:SetTextColor(col)
+
+						
+					self.SkillDesc[used]:SetText(translate.Format("skillmod_n"..k,i))
+					self.SkillDesc[used]:SizeToContents()
+				end
+			end
+			for i=1+used, 5 do
 				txt = desc[i] or " "
 				if txt:sub(1, 1) == "^" then
 					colid = tonumber(txt:sub(2, 2)) or 0

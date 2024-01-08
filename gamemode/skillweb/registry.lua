@@ -248,7 +248,10 @@ SKILL_U_HAMMER = 152
 SKILL_REINFORCEDMANHACK = 153
 SKILL_BIOLOGYV = 154
 SKILL_BIOLOGYVI = 155
-SKILL_MOON_GRAVITY = 156
+SKILL_MELEE_RUN = 156
+
+
+SKILL_MOON_GRAVITY = 157
 
 
 SKILLMOD_HEALTH = 1
@@ -359,15 +362,15 @@ local BAD = "^"..COLORID_RED
 --EndLine
 
 -- Health Tree
-GM:AddSkill(SKILL_STOIC1, "Stoic I", GOOD.."+1 maximum health\n"..BAD.."-1 Speed",
+GM:AddSkill(SKILL_STOIC1, "Устойчивый I", GOOD.."+1 maximum health\n"..BAD.."-1 Speed",
 																-4,			-6,					{SKILL_NONE, SKILL_STOIC2}, TREE_HEALTHTREE)
-GM:AddSkill(SKILL_STOIC2, "Stoic II", GOOD.."+2 maximum health\n"..BAD.."-3 Speed",
+GM:AddSkill(SKILL_STOIC2, "Устойчивый II", GOOD.."+2 maximum health\n"..BAD.."-3 Speed",
 																-4,			-4,					{SKILL_STOIC3, SKILL_VITALITY1, SKILL_REGENERATOR}, TREE_HEALTHTREE)
-GM:AddSkill(SKILL_STOIC3, "Stoic III", GOOD.."+4 maximum health\n"..BAD.."-5 Speed",
+GM:AddSkill(SKILL_STOIC3, "Устойчивый III", GOOD.."+4 maximum health\n"..BAD.."-5 Speed",
 																-3,			-2,					{SKILL_STOIC4}, TREE_HEALTHTREE)
-GM:AddSkill(SKILL_STOIC4, "Stoic IV", GOOD.."+6 maximum health\n"..BAD.."-6 Speed",
+GM:AddSkill(SKILL_STOIC4, "Устойчивый IV", GOOD.."+6 maximum health\n"..BAD.."-6 Speed",
 																-3,			0,					{SKILL_STOIC5}, TREE_HEALTHTREE)
-GM:AddSkill(SKILL_STOIC5, "Stoic V", GOOD.."+7 maximum health\n"..BAD.."-9 Speed",
+GM:AddSkill(SKILL_STOIC5, "Устойчивый V", GOOD.."+7 maximum health\n"..BAD.."-9 Speed",
 																-3,			2,					{SKILL_BLOODARMOR, SKILL_TANKER}, TREE_HEALTHTREE)
 --GM:AddSkill(SKILL_D_HEMOPHILIA, "Debuff: Hemophilia", GOOD.."+10 starting Worth\n"..GOOD.."+3 starting scrap\n"..BAD.."Bleed for 25% extra damage when hit",
 																--4,			2,					{}, TREE_HEALTHTREE)
@@ -413,6 +416,8 @@ GM:AddSkill(SKILL_ANTIGEN, "Antigen", GOOD.."+5% blood armor damage absorption\n
 
 GM:AddSkill(SKILL_SPEED1, "Speed I", GOOD.."+1 movement speed\n"..BAD.."-1 Health",
 																-4,			6,					{SKILL_NONE, SKILL_SPEED2}, TREE_SPEEDTREE)
+GM:AddSkill(SKILL_MELEE_RUN, "Легкая сталь", GOOD.."+20 к скорости\n"..BAD.."-10% к урону от ближнего урона.",
+																-2,			2,					{SKILL_SPEED3}, TREE_SPEEDTREE)
 GM:AddSkill(SKILL_SPEED2, "Speed II", GOOD.."+2 movement speed\n"..BAD.."-2 Health",
 																-4,			4,					{SKILL_SPEED3, SKILL_PHASER, SKILL_SPEED2}, TREE_SPEEDTREE)
 GM:AddSkill(SKILL_SPEED3, "Speed III", GOOD.."+5 movement speed\n"..BAD.."-4 Health",
@@ -435,7 +440,7 @@ GM:AddSkill(SKILL_MOTIONII, "Motion II", GOOD.."+0.75 movement speed",
 																-1,			-1,					{SKILL_MOTIONIII}, TREE_SPEEDTREE)
 GM:AddSkill(SKILL_MOTIONIII, "Motion III", GOOD.."+0.75 movement speed",
 																0,			-2,					{}, TREE_SPEEDTREE)
-GM:AddSkill(SKILL_MOON_GRAVITY, "Moon Gravity", GOOD.."-33% Gravity\n-20 speed",
+GM:AddSkill(SKILL_MOON_GRAVITY, "Лунная гравитация", GOOD.."-33% к гравитации\n"..BAD.."-20 к скорости",
 																0,			-3,					{SKILL_MOTIONIII}, TREE_SPEEDTREE)
 GM:AddSkill(SKILL_BACKPEDDLER, "Backpeddler", GOOD.."Move the same speed in all directions\n"..BAD.."-7 movement speed\n"..BAD.."Receive leg damage on any melee hit",
 																-6,			0,					{}, TREE_SPEEDTREE)
@@ -961,6 +966,9 @@ GM:AddSkillModifier(SKILL_SPEED2, SKILLMOD_HEALTH, -2)
 GM:AddSkillModifier(SKILL_SPEED3, SKILLMOD_HEALTH, -4)
 GM:AddSkillModifier(SKILL_SPEED4, SKILLMOD_HEALTH, -6)
 GM:AddSkillModifier(SKILL_SPEED5, SKILLMOD_HEALTH, -7)
+
+GM:AddSkillModifier(SKILL_MELEE_RUN, SKILLMOD_SPEED, 20)
+GM:AddSkillModifier(SKILL_MELEE_RUN, SKILLMOD_MELEE_DAMAGE_MUL, -0.2)
 
 -- CUSTOM SKILLS
 

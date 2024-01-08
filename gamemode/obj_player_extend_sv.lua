@@ -1200,7 +1200,7 @@ function meta:DoHulls(classid, teamid)
 		self:SetViewOffsetDucked(DEFAULT_VIEW_OFFSET_DUCKED)
 		self:SetStepSize(DEFAULT_STEP_SIZE)
 		self:SetJumpPower(DEFAULT_JUMP_POWER)
-		self:SetGravity(1-(self:IsSkillActive(SKILL_MOON_GRAVITY) and 0.33 or 0))
+		self:SetGravity(self:IsSkillActive(SKILL_MOON_GRAVITY) and 0.67 or 1)
 		self:SetBloodColor(0)
 
 		self:DrawShadow(true)

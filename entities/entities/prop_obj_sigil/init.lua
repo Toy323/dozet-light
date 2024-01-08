@@ -1,6 +1,7 @@
 INC_SERVER()
 
 ENT.HealthLock = 0
+ENT.BuffThink = 0
 
 function ENT:Initialize()
 	self:DrawShadow(false)
@@ -95,4 +96,36 @@ end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+local table_buffs = {"strengthdartboost","healdartboost","medrifledefboost"}
+local table_debuffs = {"sickness","frost","enfeeble"}
+function ENT:Think()
+	local sigilsc = {}
+	if !self.SigilsCash then
+		for _, ent in pairs(ents.FindByClass("prop_obj_sigil")) do 
+			if ent:IsValid() then
+				sigilsc[#sigilsc+1] = ent
+			end
+		end
+		self.SigilsCash = sigilsc
+	else
+		sigilsc = self.SigilsCash
+	end
+
+	if !self.SigilNumber then
+		for k,v in pairs(self.SigilsCash) do
+			if v == self then
+				self.SigilNumber = k
+			end
+		end	
+	end
+	for _, pl in pairs(player.GetAll()) do
+		if pl and pl:IsValidLivingHuman() and not self:GetSigilCorrupted() then
+          	pl:GiveStatus(self:GetSigilCorrupted() and table_debuffs[self.SigilNumber] or table_buffs[self.SigilNumber] or "strengthdartboost", 3.5)
+		--elseif pl and pl:IsValidLivingZombie() and self:GetSigilCorrupted() then
+			--pl:GiveStatus(table_zbuffs[self.SigilNumber] or "strengthdartboost", 3.5)
+		end
+	end
+	self:NextThink(CurTime()+3)
+	return true
 end

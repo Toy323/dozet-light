@@ -1340,8 +1340,10 @@ function GM:Create3DFonts()
 	surface.CreateLegacyFont(fontfamily, 16, fontweight3D, false, false,  "ZS3D2DFontSuperTiny2", false, true, nil, true)
 	surface.CreateLegacyFont(fontfamily, 18, fontweight3D, false, false,  "ZS3D2DFontSuperTiny", false, true, nil, true)
 	surface.CreateLegacyFont(fontfamily3d, 28 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFontSmaller", false, true)
+	surface.CreateLegacyFont("FB Agency", 28 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFontSmaller2", false, true)
 	surface.CreateLegacyFont(fontfamily3d, 48 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFontSmall", false, true)
 	surface.CreateLegacyFont(fontfamily3d, 72 + fontsizeadd3D, fontweight3D, false, false, "ZS3D2DFont", false, true)
+
 	surface.CreateLegacyFont(fontfamily3d, 128 + fontsizeadd3D, fontweight3D, false, false, "ZS3D2DFontBig", false, true)
 	surface.CreateLegacyFont(fontfamily3d, 28 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFontSmallerBlur", false, false, 16)
 	surface.CreateLegacyFont(fontfamily3d, 48 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFontSmallBlur", false, false, 16)
@@ -1359,6 +1361,10 @@ function GM:Create3DFonts()
 	surface.CreateLegacyFont(fontfamily, 48 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DFont2SmallBlur", false, false, 16)
 	surface.CreateLegacyFont(fontfamily, 72 + fontsizeadd3D, fontweight3D, false, false, "ZS3D2DFont2Blur", false, false, 16)
 	surface.CreateLegacyFont(fontfamily, 128 + fontsizeadd3D, fontweight3D, false, false, "ZS3D2DFont2BigBlur", false, false, 16)
+	
+
+	surface.CreateLegacyFont("Roboto Bold", 128 + fontsizeadd3D, fontweight3D, false, false, "ZS3D2DFont2Big_rob", false, true)
+	surface.CreateLegacyFont("Roboto Bold", 128 + fontsizeadd3D, fontweight3D, false, false, "ZS3D2DFont2Big_robBlur", false, false, 16)
 
 	surface.CreateLegacyFont(fontfamilysm, 14 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DUnstyleTiny", false, true)
 	surface.CreateLegacyFont(fontfamilysm, 24 + fontsizeadd3D, fontweight3D, false, false,  "ZS3D2DUnstyleSmallest", false, true)
@@ -1405,6 +1411,9 @@ function GM:CreateScalingFonts()
 	surface.CreateLegacyFont(fontfamily, screenscale * (22 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmaller", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (28 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmall", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (42 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFont", fontshadow, fontoutline)
+	surface.CreateLegacyFont("Agency FB", screenscale * (42 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFont2", false, true)
+	surface.CreateLegacyFont("Agency FB", screenscale * (26 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmall2", false, true)
+	
 	surface.CreateLegacyFont(fontfamily, screenscale * (72 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontBig", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (16 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTinyBlur", false, false, 8)
 	surface.CreateLegacyFont(fontfamily, screenscale * (22 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmallerBlur", false, false, 8)
@@ -1438,6 +1447,9 @@ function GM:CreateScalingFonts()
 
 	surface.CreateLegacyFont(fontfamily, screenscale * (20 + fontsizeadd), 0, true, false, "ZSDamageResistance", false, true)
 	surface.CreateLegacyFont(fontfamily, screenscale * (20 + fontsizeadd), 0, true, false, "ZSDamageResistanceBlur", false, true)
+
+	surface.CreateLegacyFont("Agency FB", screenscale * (20 + fontsizeadd), 0, true, false, "ZSDamageResistance2", false, true)
+	surface.CreateLegacyFont("Agency FB", screenscale * (20 + fontsizeadd), 0, true, false, "ZSDamageResistance2Blur", false, true)
 
 	surface.CreateFont("ZSXPBar", {font = "tahoma", size = screenscale * 14, weight = 500, antialias = false, shadow = true})
 end
